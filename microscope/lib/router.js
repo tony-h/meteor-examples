@@ -1,3 +1,4 @@
+// Configure the router when to load what
 Router.configure({
   layoutTemplate: 'layout',
   loadingTemplate: 'loading',
@@ -5,12 +6,17 @@ Router.configure({
   waitOn: function() { return Meteor.subscribe('posts'); }
 });
 
+// Default route
 Router.route('/', {name: 'postsList'});
+
+// View the post based on the id
 Router.route('/posts/:_id', {
   name: 'postPage',
-  data: function() {
-    console.log(this.params._id);
-    return Posts.findOne(this.params._id); }
+  data: function() { return Posts.findOne(this.params._id); }
 });
 
+// Page for submitting a new post
+Router.route('/submit', {name: 'postSubmit'});
+
+// 404 not found template.
 Router.onBeforeAction('dataNotFound', {only: 'postPage'});

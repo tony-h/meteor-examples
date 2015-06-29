@@ -13,9 +13,4 @@ if (Posts.find().count() === 0) {
     title: 'The Meteor Book',
     url: 'http://themeteorbook.com'
   });
-
-    Posts.insert({
-      title: 'Cacti',
-      url: 'https://precari.co/cacti'
-    });
 }

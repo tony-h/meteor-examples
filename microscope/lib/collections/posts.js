@@ -18,6 +18,14 @@ Meteor.methods({
       url: String
     });
 
+    if (Meteor.isServer) {
+      postAttributes.title += "(server)";
+      // wait 5 seconds
+      Meteor._sleepForMs(5000);
+    } else {
+      postAttributes.title += "(client)";
+    }
+
     var postWithSameLink = Posts.findOne({url: postAttributes.url});
     if (postWithSameLink) {
       return {

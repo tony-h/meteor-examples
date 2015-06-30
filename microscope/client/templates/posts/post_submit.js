@@ -20,10 +20,9 @@ Template.postSubmit.events({
       if (result.postExists) {
         alert('This link has already been posted');
       }
-
-      // Post has been created and validated. Display the post.
-      Router.go('postPage', {_id: result._id});
-
     });
+
+    // Post has been created and validated. Display the post.
+    Router.go('postsList');
   }
 });

@@ -8,10 +8,17 @@ Template.postSubmit.events({
       title: $(e.target).find('[name=title]').val()
     };
 
-    // Append the post ID as returned from Post.insert
-    post._id = Posts.insert(post);
+    // Call postInsert to validate the data. postInsert returns the post ID
+    Meteor.call('postInsert', post, function(error, result) {
 
-    // Show this post after creating it
-    Router.go('postPage', post);
+      // on error, display the error to the user and abort
+      if (error) {
+        return alert(error.reason);
+      }
+
+      // Post has been created and validated. Display the post.
+      Router.go('postPage', {_id: result._id});
+
+    });
   }
 });

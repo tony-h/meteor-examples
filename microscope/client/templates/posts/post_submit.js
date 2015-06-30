@@ -16,6 +16,11 @@ Template.postSubmit.events({
         return alert(error.reason);
       }
 
+      // If post exsits, display message and to route to page
+      if (result.postExists) {
+        alert('This link has already been posted');
+      }
+
       // Post has been created and validated. Display the post.
       Router.go('postPage', {_id: result._id});
 

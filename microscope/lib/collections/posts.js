@@ -18,12 +18,20 @@ Meteor.methods({
       url: String
     });
 
+    var postWithSameLink = Posts.findOne({url: postAttributes.url});
+    if (postWithSameLink) {
+      return {
+        postExists: true,
+        _id: postWithSameLink._id
+      };
+    }
+
     // Get the user information and add it to the post
     var user = Meteor.user();
     var post = _.extend(postAttributes, {
       userId: user._id,
       author: user.username,
-      submitted: new Data()
+      submitted: new Date()
     });
 
     // Insert the post and get the ID

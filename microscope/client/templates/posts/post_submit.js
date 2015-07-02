@@ -13,12 +13,12 @@ Template.postSubmit.events({
 
       // on error, display the error to the user and abort
       if (error) {
-        return alert(error.reason);
+        return throwError(error.reason);
       }
 
       // If post exsits, display message and to route to page
       if (result.postExists) {
-        alert('This link has already been posted');
+        throwError('This link has already been posted');
       }
 
       // Post has been created and validated. Display the post.

@@ -1,5 +1,8 @@
 Posts = new Mongo.Collection('posts');
 
+// For collection hooks, only one per the given set needs to return true
+// for the hook to be granted or denied.
+
 // Since insecure is removed, these are the explicit allow conditions
 Posts.allow({
   // Verifies the user owns the posts before allowing a modification
@@ -20,19 +23,11 @@ Meteor.methods({
 
   // Verify the attributes of the post are the correct type
   postInsert: function(postAttributes) {
-    check(Meteor.userId(), String);
+    check(this.userId, String);
     check(postAttributes, {
       title: String,
       url: String
     });
-
-    if (Meteor.isServer) {
-      postAttributes.title += "(server)";
-      // wait for 5 seconds
-      Meteor._sleepForMs(5000);
-    } else {
-      postAttributes.title += "(client)";
-    }
 
     var postWithSameLink = Posts.findOne({url: postAttributes.url});
     if (postWithSameLink) {

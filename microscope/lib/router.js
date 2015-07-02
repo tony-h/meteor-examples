@@ -15,6 +15,12 @@ Router.route('/posts/:_id', {
   data: function() { return Posts.findOne(this.params._id); }
 });
 
+// edit post route
+Router.route('/posts/:_id/edit',{
+  name: 'postEdit',
+  data: function() { return Posts.findOne(this.params._id); }
+});
+
 // Page for submitting a new post
 Router.route('/submit', {name: 'postSubmit'});
 
@@ -28,7 +34,7 @@ var requireLogin = function() {
     } else {
       this.render('accessDenied');
     }
-    
+
   } else {
     this.next();
   }

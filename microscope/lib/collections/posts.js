@@ -1,9 +1,17 @@
 Posts = new Mongo.Collection('posts');
 
+// Since insecure is removed, these are the explicit allow conditions
 Posts.allow({
-  insert: function(userId, doc) {
-    // only allow posting if a user is logged in
-    return !! userId;
+  // Verifies the user owns the posts before allowing a modification
+  update: function(userId, post) { return ownsDocument(userId, post); },
+  remove: function(userId, post) { return ownsDocument(userId, post); }
+});
+
+// The explicit deny list (overrides the allow list)
+Posts.deny({
+  update: function(userId, post, fieldNames){
+    // may only edit the following two fields:
+    return (_.without(fieldNames, 'url', 'title').length > 0);
   }
 });
 
@@ -17,6 +25,14 @@ Meteor.methods({
       title: String,
       url: String
     });
+
+    if (Meteor.isServer) {
+      postAttributes.title += "(server)";
+      // wait for 5 seconds
+      Meteor._sleepForMs(5000);
+    } else {
+      postAttributes.title += "(client)";
+    }
 
     var postWithSameLink = Posts.findOne({url: postAttributes.url});
     if (postWithSameLink) {

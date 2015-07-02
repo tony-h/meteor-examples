@@ -1,3 +1,19 @@
+
+Template.postSubmit.onCreated(function() {
+  // Setup the submit errors info
+  Session.set('postSubmitErrors', {});
+});
+
+Template.postSubmit.helpers({
+  // Based on the HTML field, get the error message to display
+  errorMessage: function(field) {
+    return Session.get('postSubmitErrors')[field];
+  },
+  errorClass: function(field) {
+    return !!Session.get('postSubmitErrors')[field] ? 'has-error' : '';
+  }
+});
+
 // Binding an event to the new post submit event
 Template.postSubmit.events({
   'submit form': function(e) {
@@ -7,6 +23,12 @@ Template.postSubmit.events({
       url: $(e.target).find('[name=url]').val(),
       title: $(e.target).find('[name=title]').val()
     };
+
+    // Validate the post values prior to sending them to the db
+    var errors = validatePost(post);
+    if (errors.title || errors.url) {
+      return Session.set('postSubmitErrors', errors);
+    }
 
     // Call postInsert to validate the data. postInsert returns the post ID
     Meteor.call('postInsert', post, function(error, result) {

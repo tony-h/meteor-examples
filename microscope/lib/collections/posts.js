@@ -19,6 +19,21 @@ Posts.deny({
 });
 
 
+// error messages for creating / editing a post
+validatePost = function (post) {
+
+  var errors = {};
+
+  if (!post.title) {
+    errors.title = "Please fill in a headline";
+  }
+  if (!post.url) {
+    errors.url = "Please fill in a URL";
+  }
+
+  return errors;
+};
+
 Meteor.methods({
 
   // Verify the attributes of the post are the correct type
@@ -29,6 +44,13 @@ Meteor.methods({
       url: String
     });
 
+    // Server side validation invalid post data
+    var errors = validatePost(postAttributes);
+    if (errors.title || errors.url) {
+      throw new Meteor.Error('invalid-post', "You must set a title and URL for your post");
+    }
+
+    // Determines if a post with the same link exists
     var postWithSameLink = Posts.findOne({url: postAttributes.url});
     if (postWithSameLink) {
       return {

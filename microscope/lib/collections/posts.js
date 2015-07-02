@@ -18,6 +18,14 @@ Posts.deny({
   }
 });
 
+Posts.deny({
+  update: function(userId, post, fieldNames, modifier) {
+
+    // Validate content in the fields on update
+    var errors = validatePost(modifier.$set);
+    return errors.title || errors.url;
+  }
+});
 
 // error messages for creating / editing a post
 validatePost = function (post) {

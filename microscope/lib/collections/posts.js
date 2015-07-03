@@ -72,7 +72,8 @@ Meteor.methods({
     var post = _.extend(postAttributes, {
       userId: user._id,
       author: user.username,
-      submitted: new Date()
+      submitted: new Date(),
+      commentsCount: 0
     });
 
     // Insert the post and get the ID

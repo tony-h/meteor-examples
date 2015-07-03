@@ -4,7 +4,7 @@ Router.configure({
   loadingTemplate: 'loading',
   notFoundTemplate: 'notFound',
   waitOn: function() {
-    return [Meteor.subscribe('posts'), Meteor.subscribe('comments')];
+    return Meteor.subscribe('posts');
   }
 });
 
@@ -14,7 +14,14 @@ Router.route('/', {name: 'postsList'});
 // View the post based on the id
 Router.route('/posts/:_id', {
   name: 'postPage',
-  data: function() { return Posts.findOne(this.params._id); }
+  // Load the comments for this post id
+  waitOn: function() {
+    return Meteor.subscribe('comments', this.params._id);
+  },
+  // Load the posts for the post id
+  data: function() {
+    return Posts.findOne(this.params._id);
+  }
 });
 
 // edit post route

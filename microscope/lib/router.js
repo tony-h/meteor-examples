@@ -4,12 +4,24 @@ Router.configure({
   loadingTemplate: 'loading',
   notFoundTemplate: 'notFound',
   waitOn: function() {
-    return Meteor.subscribe('posts'), Meteor.subscribe('notifications');
+    return[Meteor.subscribe('notifications')];
   }
 });
 
-// Default route
-Router.route('/', {name: 'postsList'});
+// Default route. Shows posts with pagination
+Router.route('/:postsLimit?', {
+  name: 'postsList',
+  waitOn: function() {
+    var limit = parseInt(this.params.postsLimit) || 5;
+    return Meteor.subscribe('posts', {sort: {submitted: -1}, limit: limit});
+  },
+  data: function() {
+    var limit = parseInt(this.params.postsLimit) || 5;
+    return {
+      posts: Posts.find({}, {sort: {submitted: -1}, limit: limit})
+    };
+  }
+});
 
 // View the post based on the id
 Router.route('/posts/:_id', {

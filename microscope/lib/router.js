@@ -44,22 +44,23 @@ Router.route('/:postsLimit?', {
 // View the post based on the id
 Router.route('/posts/:_id', {
   name: 'postPage',
-  // Load the comments for this post id
   waitOn: function() {
-    return Meteor.subscribe('comments', this.params._id);
+    return [
+      Meteor.subscribe('singlePost', this.params._id),
+      Meteor.subscribe('comments', this.params._id)
+    ];
   },
-  // Load the posts for the post id
-  data: function() {
-    return Posts.findOne(this.params._id);
-  }
-});
-
-// edit post route
-Router.route('/posts/:_id/edit',{
-  name: 'postEdit',
   data: function() { return Posts.findOne(this.params._id); }
 });
 
+// Route for editing a post
+Router.route('/posts/:_id/edit', {
+  name: 'postEdit',
+  waitOn: function() {
+    return Meteor.subscribe('singlePost', this.params._id);
+  },
+  data: function() { return Posts.findOne(this.params._id); }
+});
 // Page for submitting a new post
 Router.route('/submit', {name: 'postSubmit'});
 

@@ -11,5 +11,5 @@ Meteor.publish('comments', function(postId) {
 
 // Publish the Notifications
 Meteor.publish('notifications', function() {
-  return Notifications.find();
+  return Notifications.find({userId: this.userId, read: false});
 });

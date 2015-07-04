@@ -8,19 +8,27 @@ Router.configure({
   }
 });
 
-// Default route. Shows posts with pagination
-Router.route('/:postsLimit?', {
-  name: 'postsList',
+// Iron Router controller to hand the postsList (default) route
+PostsListController = RouteController.extend({
+  template: 'postsList',
+  increment: 5,
+  postsLimit: function() {
+    return parseInt(this.params.postsLimit) || this.increment;
+  },
+  findOptions: function() {
+    return {sort: {submitted: -1}, limit: this.postsLimit()};
+  },
   waitOn: function() {
-    var limit = parseInt(this.params.postsLimit) || 5;
-    return Meteor.subscribe('posts', {sort: {submitted: -1}, limit: limit});
+    return Meteor.subscribe('posts', this.findOptions());
   },
   data: function() {
-    var limit = parseInt(this.params.postsLimit) || 5;
-    return {
-      posts: Posts.find({}, {sort: {submitted: -1}, limit: limit})
-    };
+    return {posts: Posts.find({}, this.findOptions())};
   }
+});
+
+// Default route. Shows posts with pagination
+Router.route('/:postsLimit?', {
+  name: 'postsList'
 });
 
 // View the post based on the id

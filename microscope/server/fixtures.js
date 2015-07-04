@@ -12,6 +12,17 @@ if (Posts.find().count() === 0) {
   });
   var sacha = Meteor.users.findOne(sachaId);
 
+  // create a real test user
+  var testId = Accounts.createUser({
+                    username: 'test',
+                    email : '',
+                    password : 'password',
+                    profile  : {
+                        name: 'Test User'
+                    }
+    });
+    var test = Meteor.users.findOne(testId);
+
   // Add posts and comments
   var telescopeId = Posts.insert({
     title: 'Introducing Telescope',
@@ -55,4 +66,15 @@ if (Posts.find().count() === 0) {
     submitted: new Date(now - 12 * 3600 * 1000),
     commentsCount: 0
   });
+
+  for (var i = 0; i < 10; i++) {
+    Posts.insert({
+      title: 'Test post #' + i,
+      author: test.profile.name,
+      userId: test._id,
+      url: 'http://google.com/?q=test-' + i,
+      submitted: new Date(now - i * 3600 * 1000),
+      commentsCount: 0
+    });
+  }
 }

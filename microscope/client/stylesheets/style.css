@@ -55,7 +55,8 @@ body {
   .post .upvote {
     display: block;
     margin: 7px 12px 0 0;
-    float: left; }
+    float: left;
+    font-size: 22px; }
   .post .post-content {
     float: left; }
     .post .post-content h3 {

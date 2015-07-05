@@ -27,9 +27,10 @@ Posts.deny({
   }
 });
 
-// error messages for creating / editing a post
+// Function to validate a post
 validatePost = function (post) {
 
+  // error messages for creating / editing a post
   var errors = {};
 
   if (!post.title) {
@@ -44,8 +45,10 @@ validatePost = function (post) {
 
 Meteor.methods({
 
-  // Verify the attributes of the post are the correct type
+  // A Meteor method  to insert a new post
   postInsert: function(postAttributes) {
+
+    // Verify the attributes of the post are the correct type
     check(this.userId, String);
     check(postAttributes, {
       title: String,
@@ -73,7 +76,9 @@ Meteor.methods({
       userId: user._id,
       author: user.username,
       submitted: new Date(),
-      commentsCount: 0
+      commentsCount: 0,
+      upvoters: [],
+      votes: 0
     });
 
     // Insert the post and get the ID
@@ -83,5 +88,28 @@ Meteor.methods({
     return {
       _id: postId
     };
+  },
+
+  // A Meteor method to increnemnt the up-vote
+  upvote: function(postId) {
+
+    // Verify the user and post ID
+    check(this.userId, String);
+    check(postId, String);
+
+    var post = Posts.findOne(postId);
+
+    if (!post) {
+      throw new Meteor.Error('invalid', 'Post not found');
+    }
+    if (_.include(post.upvoters, this.userId)) {
+      throw new Meteor.Error('invalid', 'Already upvoted this post');
+    }
+
+    // Updte the up-vote count
+    Posts.update(post._id, {
+      $addToSet: {upvoters: this.userId},
+      $inc: {votes: 1}
+    });
   }
 });

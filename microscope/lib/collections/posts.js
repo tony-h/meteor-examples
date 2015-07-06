@@ -97,19 +97,24 @@ Meteor.methods({
     check(this.userId, String);
     check(postId, String);
 
-    var post = Posts.findOne(postId);
+    /*  This sequence prevents a user from voting twice if they can sneak
+        other post between steps 1 and 3:
+          1) Grab the post from the database.
+          2) Check if the user has voted.
+          3) If not, do a vote by the user */
 
-    if (!post) {
-      throw new Meteor.Error('invalid', 'Post not found');
-    }
-    if (_.include(post.upvoters, this.userId)) {
-      throw new Meteor.Error('invalid', 'Already upvoted this post');
-    }
+    var affected = Posts.update({
+      _id: postId,
+      upvoters: {$ne: this.userId}
+    }, {
 
-    // Updte the up-vote count
-    Posts.update(post._id, {
+      // Updte the up-vote count
       $addToSet: {upvoters: this.userId},
       $inc: {votes: 1}
     });
+
+    if (! affected) {
+      throw new Meteor.Error('invalid', "You weren't able to upvote that post");
+    }
   }
 });
